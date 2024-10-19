@@ -1,5 +1,7 @@
 from const import *
-from player import Player
+from sub_classes.player import Player
+from sub_classes.star import Star
+from sub_classes.meteor import Meteor
 import pygame as pg
 from random import randint
 
@@ -11,35 +13,36 @@ running = True
 clock = pg.time.Clock()
 
 
-
-player = Player(pg.key.get_pressed())
+all_sprites = pg.sprite.Group()
+stars_group = pg.sprite.Group()
+laser_surf = pg.image.load("graphics\laser.png").convert_alpha()
 star_surface = pg.image.load("graphics\star.png").convert_alpha()
-meteor_surface = pg.image.load("./graphics/meteor.png").convert_alpha()
-meteor_rect = meteor_surface.get_rect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT/2))
-laser_surface = pg.image.load("./graphics/laser.png").convert_alpha()
-laser_rect = laser_surface.get_rect(bottomleft=(20, WINDOW_HEIGHT-40))
-coordinates = []
-for ix in range(1, 15, 2):
-    for iy in range(1, 9):
-        coordinates.append((randint((ix-1) * 100, ix*100), randint((iy-1) * 100, iy*100)))
+meteor_surface = pg.image.load("graphics\meteor.png").convert_alpha()
+player = Player(all_sprites)
+
+for _ in range(30):
+    star = Star(star_surface, stars_group)
+
+#custom event
+meteor_event = pg.event.custom_type()
+pg.time.set_timer(meteor_event, 1000)
+
+
 while running:
     delta_time = clock.tick(165)/1000
     # event loop
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
-        
-    # player movement
-    player.move(delta_time, pg.key.get_pressed())
-
+        if event.type == meteor_event:
+            Meteor(meteor_surface, (randint(0, WINDOW_WIDTH), 0), all_sprites)
+    # updating the game
+    all_sprites.update(delta_time)
 
     # drawing the game
     display_surface.fill('darkgrey')
-    for coords in coordinates:
-        display_surface.blit(star_surface, coords)
-    display_surface.blit(player.surface, player.frect)
-    display_surface.blit(meteor_surface, meteor_rect)
-    display_surface.blit(laser_surface, laser_rect)
+    stars_group.draw(display_surface)
+    all_sprites.draw(display_surface)
     pg.display.update()
 
 

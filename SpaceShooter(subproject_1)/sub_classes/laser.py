@@ -6,8 +6,7 @@ class Laser(pg.sprite.Sprite):
         super().__init__(*groups)
         self.image = surf
         self.rect = self.image.get_frect(midbottom=pos)
+        self.speed = 700
     
     def update(self, delta_time):
-        self.rect.y -= 400 * delta_time
-        if self.rect.bottom < 0:
-            self.kill()
+        self.rect.y -= self.speed * delta_time

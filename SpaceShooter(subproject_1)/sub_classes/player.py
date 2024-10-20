@@ -1,11 +1,11 @@
 import pygame as pg
-from laser import Laser
-from const import *
+from .laser import Laser
+from .const import *
 
 class Player(pg.sprite.Sprite):
     def __init__(self, *groups):
         super().__init__(*groups)
-        self.image = pg.image.load("graphics\starship.png").convert_alpha()
+        self.image = pg.image.load("SpaceShooter(subproject_1)/graphics\starship.png").convert_alpha()
         self.rect = self.image.get_frect(center=(WINDOW_WIDTH/2, WINDOW_HEIGHT*0.8))
         self.direction = pg.math.Vector2(0, 0)
         self.speed = 450
@@ -13,8 +13,14 @@ class Player(pg.sprite.Sprite):
         self.can_shoot = True
         self.laser_shoot_time = 0
         self.cooldown_duration = 400
+
+        #mask
+        self.mask = pg.mask.from_surface(self.image)
+
+
         #laser
-        self.laser_surf = pg.image.load("graphics\laser.png").convert_alpha()
+        self.laser_surf = pg.image.load("SpaceShooter(subproject_1)/graphics/purplLaser.png").convert_alpha()
+        self.laser_group = pg.sprite.Group()
 
 
     def move(self, deltat, keys):
@@ -27,7 +33,7 @@ class Player(pg.sprite.Sprite):
     
     def shoot(self):
         if self.can_shoot:
-            Laser(self.laser_surf, self.rect.midtop, self.groups())
+            Laser(self.laser_surf, self.rect.midtop, self.laser_group)
             self.laser_shoot_time = pg.time.get_ticks()
             self.can_shoot = False
     

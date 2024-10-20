@@ -1,5 +1,5 @@
 import pygame as pg
-from const import *
+from .const import *
 from random import randint
 
 
